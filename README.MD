@@ -1,12 +1,20 @@
-# buft.io
+# [buft.io](buft.io)
 
 Webapp source
 
-# Project build Using Svelte Kit
+# Project build Using Svelte Kit & Docker
+
+## Run via docker-compose
+
+```bash
+docker-compose build
+docker-compose up -d
+```
+
 
 ## Developing
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+Once you've created a project and installed dependencies with `npm install`, start a development server:
 
 ```bash
 npm run dev
