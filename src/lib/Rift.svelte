@@ -14,25 +14,48 @@
 		};
 	}
 
-	function setCharacterPosition(event: MouseEvent) {
+	function mouseInput(event: MouseEvent) {
 		event.preventDefault();
-		const character = document.getElementById('character');
-		if (character === null) return;
 		if (event.buttons === 0) return;
 
 		const { clientX, clientY } = event;
-		character.style.top = `${clientY}px`;
-		character.style.left = `${clientX}px`;
+		setCharacterPosition(clientX, clientY);
 	}
 
-	function nodefaults(event: MouseEvent) {
+	function touchInput(event: TouchEvent) {
+		const touches = event.changedTouches;
+		const { x, y } = new Array(...touches).reduce(
+			({ x, y }, { clientX, clientY }) => {
+				return { x: x + clientX, y: y + clientY };
+			},
+			{ x: 0, y: 0 }
+		);
+		setCharacterPosition(x / touches.length, y / touches.length);
+	}
+
+	function setCharacterPosition(x: number, y: number) {
+		const character = document.getElementById('character');
+		if (character === null) return;
+
+		character.style.top = `${y}px`;
+		character.style.left = `${x}px`;
+	}
+
+	function nodefaults(event: Event) {
 		event.preventDefault();
 	}
 
 	onMount(() => {
-		window.onmousedown = setCharacterPosition;
-		window.onmousemove = throttled(100, setCharacterPosition);
+		window.onmousedown = mouseInput;
+		window.ontouchstart = touchInput;
+		window.ontouchend = touchInput;
+
+		window.onmousemove = throttled(100, mouseInput);
+		window.ontouchmove = throttled(100, touchInput);
+
 		window.oncontextmenu = nodefaults;
+		window.ondragstart = nodefaults;
+		window.onresize = nodefaults;
 	});
 </script>
 
@@ -44,6 +67,15 @@
 </div>
 
 <style>
+	:global(html),
+	:global(body) {
+		overscroll-behavior: none;
+		padding: 0px;
+		margin: 0px;
+		width: 100%;
+		height: 100%;
+	}
+
 	.greeting {
 		position: absolute;
 		top: 20%;
@@ -67,14 +99,17 @@
 		background-blend-mode: multiply;
 		z-index: -100;
 		overflow: hidden;
+		overscroll-behavior: contain;
 	}
 
 	#character {
 		position: relative;
-		top: 50%;
+		top: 80%;
 		left: 50%;
 		width: 30rem;
 		height: 30rem;
+		max-width: 50%;
+
 		transition: cubic-bezier(0.39, 0.575, 0.565, 1) 1s;
 		transform: translate(-50%, -50%);
 	}
