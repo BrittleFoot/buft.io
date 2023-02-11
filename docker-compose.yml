@@ -1,0 +1,14 @@
+version: '3.7'
+
+services:
+  app:
+    image: 'buft-io'
+    container_name: buft-io
+
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: deploy-node
+
+    ports:
+      - '3000:3000'

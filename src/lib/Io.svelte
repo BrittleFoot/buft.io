@@ -1,20 +1,12 @@
 <!-- svelte-ignore a11y-media-has-caption -->
-<video
-	class="hero"
-	poster="https://cdn.cloudflare.steamstatic.com/apps/dota2/videos/dota_react/heroes/renders/wisp.png"
-	preload="auto"
-	autoplay
-	loop
-	playsinline
->
-	<source
-		type="video/webm"
-		src="https://cdn.cloudflare.steamstatic.com/apps/dota2/videos/dota_react/heroes/renders/wisp.webm"
-	/>
-	<img
-		src="https://cdn.cloudflare.steamstatic.com/apps/dota2/videos/dota_react/heroes/renders/wisp.png"
-		alt="IO"
-	/>
+<script>
+	let preview = '/wisp.png';
+	let animation = '/wisp.webm';
+</script>
+
+<video class="hero" poster={preview} preload="auto" autoplay loop playsinline>
+	<source type="video/webm" src={animation} />
+	<img src={preview} alt="IO" />
 </video>
 
 <style>
