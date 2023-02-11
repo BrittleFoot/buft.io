@@ -37,19 +37,36 @@
 </script>
 
 <div class="rift">
+	<div class="greeting">Why Hello There!</div>
 	<div id="character">
 		<Io />
 	</div>
 </div>
 
 <style>
+	.greeting {
+		position: absolute;
+		top: 20%;
+		left: 50%;
+		font-size: 5rem;
+		color: #fff;
+		text-shadow: 2rem 2rem 2rem #000;
+		transform: translate(-50%, -50%);
+		z-index: 100;
+		text-align: center;
+	}
 	.rift {
 		position: absolute;
 		top: 0;
 		left: 0;
 		width: 100%;
 		height: 100%;
-		background: #495;
+		background: #4c5;
+		background-image: url('/grass.jpeg');
+		background-size: cover;
+		background-blend-mode: multiply;
+		z-index: -100;
+		overflow: hidden;
 	}
 
 	#character {
