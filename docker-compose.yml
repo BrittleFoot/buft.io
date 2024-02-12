@@ -2,8 +2,8 @@ version: '3.7'
 
 services:
   app:
-    image: 'buft-io'
-    container_name: buft-io
+    image: 'buftio'
+    container_name: buftio
 
     build:
       context: .
@@ -14,5 +14,5 @@ services:
 
 networks:
   default:
-    external:
-      name: server-private
+    name: server-private
+    external: true
