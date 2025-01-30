@@ -152,17 +152,10 @@ function _Scene() {
     return (
         <>
             <color attach="background" args={['#101009']} />
-            <ambientLight intensity={0} />
 
             <fog attach="fog" args={['#101009', 20, 30]} />
 
             <ambientLight intensity={0.25} />
-            <directionalLight
-                castShadow
-                intensity={2}
-                position={[10, 6, 6]}
-                shadow-mapSize={[1024, 1024]}
-            ></directionalLight>
 
             <mesh position={[0, -2.2, 0]} rotation={[-Math.PI / 2, 0, 0]}>
                 <planeGeometry args={[50, 50]} />
@@ -180,10 +173,6 @@ function _Scene() {
                 />
             </mesh>
 
-            <Environment preset="dawn" />
-
-            {/* <CameraControls makeDefault /> */}
-
             <ScrollControls pages={10}>
                 <Spiral numPoints={100} height={4}>
                     <mesh position={[0, 0, 0]}>
@@ -194,6 +183,8 @@ function _Scene() {
 
                 <Olympus />
             </ScrollControls>
+
+            <Environment preset="sunset" />
 
             <EffectComposer>
                 <Bloom luminanceThreshold={0.5} intensity={0.1} />
