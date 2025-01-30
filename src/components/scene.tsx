@@ -1,10 +1,20 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 
-import { CameraControls, Environment, useGLTF } from '@react-three/drei'
-import { Canvas, useFrame } from '@react-three/fiber'
+import {
+    CurveModifier,
+    CurveModifierRef,
+    Environment,
+    MeshReflectorMaterial,
+    Point,
+    Points,
+    ScrollControls,
+    useGLTF,
+    useScroll,
+} from '@react-three/drei'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Bloom, EffectComposer } from '@react-three/postprocessing'
-import { useEffect, useRef } from 'react'
+import { ReactElement, useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { KeyControlsHandler, KeyControlsProvider } from './key'
 
@@ -57,6 +67,78 @@ function Rock() {
     )
 }
 
+function curvePath({
+    numPoints = 100,
+    height = 20,
+    radius = 3,
+    turns = 1,
+    y0 = -2,
+}) {
+    const ps = []
+
+    for (let i = 0; i < numPoints; i++) {
+        const angle = (i / numPoints) * (Math.PI * 2) * turns
+        const x = radius * Math.cos(angle)
+        const y = (i / numPoints) * height // Height interpolation
+        const z = radius * Math.sin(angle)
+        ps.push(new THREE.Vector3(x, y + y0, z))
+    }
+
+    return ps
+}
+
+function Spiral({
+    numPoints = 100,
+    height = 20,
+    children,
+}: {
+    numPoints?: number
+    height?: number
+    children: ReactElement
+}) {
+    const scroll = useScroll()
+    const ref = useRef<CurveModifierRef>(null)
+
+    const camera = useThree((state) => state.camera)
+
+    useFrame(() => {
+        if (!ref.current) return
+
+        //ref.current.uniforms.pathOffset.value = scroll.offset
+
+        const point = curve.getPoint(1 - scroll.offset)
+
+        if (!point) {
+            return
+        }
+
+        camera.position.set(point.x, point.y, point.z)
+        camera.lookAt(0, 0, 0)
+    })
+
+    const { curve, points } = useMemo(() => {
+        const ps = curvePath({ numPoints, height, radius: 5, turns: 2 })
+        return {
+            curve: new THREE.CatmullRomCurve3(ps, false, 'catmullrom', 0.5),
+            points: ps,
+        }
+    }, [numPoints, height])
+
+    return (
+        <>
+            <CurveModifier curve={curve} ref={ref}>
+                {children}
+            </CurveModifier>
+            <Points limit={numPoints}>
+                <pointsMaterial size={0.1} color="blue" opacity={0.3} />
+                {points.map((p, i) => (
+                    <Point key={i} position={p} />
+                ))}
+            </Points>
+        </>
+    )
+}
+
 function Olympus() {
     return (
         <>
@@ -67,30 +149,51 @@ function Olympus() {
 }
 
 function _Scene() {
-    const [mX, mY, mZ] = [100, 100, 100]
-
     return (
         <>
+            <color attach="background" args={['#101009']} />
             <ambientLight intensity={0} />
-            {/* <Sphere position={[0, 0, 0]} args={[2, 16, 16]}>
-                <meshStandardMaterial color="white" />
-            </Sphere> */}
 
-            <pointLight
-                position={[mX / 2, mY / 2, -mZ / 4]}
-                decay={0}
-                intensity={Math.PI * 2}
-            />
+            <fog attach="fog" args={['#101009', 20, 30]} />
 
-            <pointLight
-                position={[mX / 2, mY / 2, mZ * 2]}
-                decay={0}
-                intensity={Math.PI * 1}
-            />
+            <ambientLight intensity={0.25} />
+            <directionalLight
+                castShadow
+                intensity={2}
+                position={[10, 6, 6]}
+                shadow-mapSize={[1024, 1024]}
+            ></directionalLight>
 
-            <Environment preset="sunset" />
+            <mesh position={[0, -2.2, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+                <planeGeometry args={[50, 50]} />
+                <MeshReflectorMaterial
+                    blur={[400, 100]}
+                    mirror={0.75}
+                    resolution={1024}
+                    mixBlur={1}
+                    mixStrength={15}
+                    depthScale={1}
+                    minDepthThreshold={0.85}
+                    color="#151515"
+                    metalness={0.6}
+                    roughness={1}
+                />
+            </mesh>
 
-            <Olympus />
+            <Environment preset="dawn" />
+
+            {/* <CameraControls makeDefault /> */}
+
+            <ScrollControls pages={10}>
+                <Spiral numPoints={100} height={4}>
+                    <mesh position={[0, 0, 0]}>
+                        <meshStandardMaterial color="black" />
+                        <boxGeometry args={[0, 0, 0]} />
+                    </mesh>
+                </Spiral>
+
+                <Olympus />
+            </ScrollControls>
 
             <EffectComposer>
                 <Bloom luminanceThreshold={0.5} intensity={0.1} />
@@ -102,10 +205,13 @@ function _Scene() {
 export function Scene() {
     return (
         <KeyControlsProvider>
-            <Canvas shadows>
+            <Canvas
+                shadows
+                dpr={[1, 1.5]}
+                camera={{ position: [5, 3, 6], fov: 50 }}
+                gl={{ alpha: false }}
+            >
                 <_Scene />
-
-                <CameraControls makeDefault />
                 <KeyControlsHandler />
             </Canvas>
         </KeyControlsProvider>

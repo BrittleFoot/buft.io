@@ -6,7 +6,7 @@ export function Sidebar() {
             <Card className="backdrop-blur bg-card/70">
                 <CardHeader>
                     <CardTitle>Hello!</CardTitle>
-                    <CardDescription>Welcome to my website!</CardDescription>
+                    <CardDescription>My name is Igor!</CardDescription>
                 </CardHeader>
             </Card>
         </div>
