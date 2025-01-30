@@ -3,8 +3,8 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-    title: ':)',
-    description: ':----------)',
+    title: 'buft.io',
+    description: 'hey there!',
 }
 
 export default function RootLayout({
