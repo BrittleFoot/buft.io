@@ -3,20 +3,20 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-    title: 'buft.io',
-    description: 'hey there!',
+  title: 'buft.io',
+  description: 'hey there!',
 }
 
 export default function RootLayout({
-    children,
+  children,
 }: Readonly<{
-    children: React.ReactNode
+  children: React.ReactNode
 }>) {
-    return (
-        <html lang="en" style={{ colorScheme: 'dark' }} className="dark">
-            <ReactQueryProvider>
-                <body className="antialiased h-[100vh]">{children}</body>
-            </ReactQueryProvider>
-        </html>
-    )
+  return (
+    <html lang="en" style={{ colorScheme: 'dark' }} className="dark">
+      <ReactQueryProvider>
+        <body className="antialiased h-[100vh]">{children}</body>
+      </ReactQueryProvider>
+    </html>
+  )
 }

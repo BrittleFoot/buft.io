@@ -2,15 +2,15 @@
 'use client'
 
 import {
-    CurveModifier,
-    CurveModifierRef,
-    Environment,
-    MeshReflectorMaterial,
-    Point,
-    Points,
-    ScrollControls,
-    useGLTF,
-    useScroll,
+  CurveModifier,
+  CurveModifierRef,
+  Environment,
+  MeshReflectorMaterial,
+  Point,
+  Points,
+  ScrollControls,
+  useGLTF,
+  useScroll,
 } from '@react-three/drei'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Bloom, EffectComposer } from '@react-three/postprocessing'
@@ -19,192 +19,192 @@ import * as THREE from 'three'
 import { KeyControlsHandler, KeyControlsProvider } from './key'
 
 function Monk() {
-    // Load the GLB file
-    const obj = useGLTF('/sitting.glb')
-    const { scene, animations } = obj
+  // Load the GLB file
+  const obj = useGLTF('/sitting.glb')
+  const { scene, animations } = obj
 
-    // Animation mixer reference
-    const mixer = useRef<THREE.AnimationMixer | null>(null)
+  // Animation mixer reference
+  const mixer = useRef<THREE.AnimationMixer | null>(null)
 
-    useEffect(() => {
-        // Initialize the AnimationMixer when the component mounts
-        mixer.current = new THREE.AnimationMixer(scene)
+  useEffect(() => {
+    // Initialize the AnimationMixer when the component mounts
+    mixer.current = new THREE.AnimationMixer(scene)
 
-        // Play the first animation clip
-        const action = mixer.current.clipAction(animations[0])
-        action.play()
+    // Play the first animation clip
+    const action = mixer.current.clipAction(animations[0])
+    action.play()
 
-        // Cleanup the mixer when the component unmounts
-        return () => {
-            mixer.current?.stopAllAction()
-        }
-    }, [scene, animations])
+    // Cleanup the mixer when the component unmounts
+    return () => {
+      mixer.current?.stopAllAction()
+    }
+  }, [scene, animations])
 
-    // Update the animation on every frame
-    useFrame((state, delta) => {
-        if (mixer.current) mixer.current.update(delta) // Advance animation based on time
-    })
+  // Update the animation on every frame
+  useFrame((state, delta) => {
+    if (mixer.current) mixer.current.update(delta) // Advance animation based on time
+  })
 
-    return (
-        <mesh position={[0.0, 0.0, 0.0]}>
-            <primitive object={scene} />
-        </mesh>
-    )
+  return (
+    <mesh position={[0.0, 0.0, 0.0]}>
+      <primitive object={scene} />
+    </mesh>
+  )
 }
 
 function Rock() {
-    // Load the GLB file
-    const obj = useGLTF('/rock.glb')
+  // Load the GLB file
+  const obj = useGLTF('/rock.glb')
 
-    return (
-        <mesh
-            scale={2}
-            position={[-1.8, -0.9, -0.3]}
-            rotation={[0, (7 * Math.PI) / 4, 0]}
-        >
-            <primitive object={obj.scene} />
-        </mesh>
-    )
+  return (
+    <mesh
+      scale={2}
+      position={[-1.8, -0.9, -0.3]}
+      rotation={[0, (7 * Math.PI) / 4, 0]}
+    >
+      <primitive object={obj.scene} />
+    </mesh>
+  )
 }
 
 function curvePath({
-    numPoints = 100,
-    height = 20,
-    radius = 3,
-    turns = 1,
-    y0 = -2,
+  numPoints = 100,
+  height = 20,
+  radius = 3,
+  turns = 1,
+  y0 = -2,
 }) {
-    const ps = []
+  const ps = []
 
-    for (let i = 0; i < numPoints; i++) {
-        const angle = (i / numPoints) * (Math.PI * 2) * turns
-        const x = radius * Math.cos(angle)
-        const y = (i / numPoints) * height // Height interpolation
-        const z = radius * Math.sin(angle)
-        ps.push(new THREE.Vector3(x, y + y0, z))
-    }
+  for (let i = 0; i < numPoints; i++) {
+    const angle = (i / numPoints) * (Math.PI * 2) * turns
+    const x = radius * Math.cos(angle)
+    const y = (i / numPoints) * height // Height interpolation
+    const z = radius * Math.sin(angle)
+    ps.push(new THREE.Vector3(x, y + y0, z))
+  }
 
-    return ps
+  return ps
 }
 
 function Spiral({
-    numPoints = 100,
-    height = 20,
-    children,
+  numPoints = 100,
+  height = 20,
+  children,
 }: {
-    numPoints?: number
-    height?: number
-    children: ReactElement
+  numPoints?: number
+  height?: number
+  children: ReactElement
 }) {
-    const scroll = useScroll()
-    const ref = useRef<CurveModifierRef>(null)
+  const scroll = useScroll()
+  const ref = useRef<CurveModifierRef>(null)
 
-    const camera = useThree((state) => state.camera)
+  const camera = useThree((state) => state.camera)
 
-    useFrame(() => {
-        if (!ref.current) return
+  useFrame(() => {
+    if (!ref.current) return
 
-        //ref.current.uniforms.pathOffset.value = scroll.offset
+    //ref.current.uniforms.pathOffset.value = scroll.offset
 
-        const point = curve.getPoint(1 - scroll.offset)
+    const point = curve.getPoint(1 - scroll.offset)
 
-        if (!point) {
-            return
-        }
+    if (!point) {
+      return
+    }
 
-        camera.position.set(point.x, point.y, point.z)
-        camera.lookAt(0, 0, 0)
-    })
+    camera.position.set(point.x, point.y, point.z)
+    camera.lookAt(0, 0, 0)
+  })
 
-    const { curve, points } = useMemo(() => {
-        const ps = curvePath({ numPoints, height, radius: 5, turns: 2 })
-        return {
-            curve: new THREE.CatmullRomCurve3(ps, false, 'catmullrom', 0.5),
-            points: ps,
-        }
-    }, [numPoints, height])
+  const { curve, points } = useMemo(() => {
+    const ps = curvePath({ numPoints, height, radius: 5, turns: 2 })
+    return {
+      curve: new THREE.CatmullRomCurve3(ps, false, 'catmullrom', 0.5),
+      points: ps,
+    }
+  }, [numPoints, height])
 
-    return (
-        <>
-            <CurveModifier curve={curve} ref={ref}>
-                {children}
-            </CurveModifier>
-            <Points limit={numPoints}>
-                <pointsMaterial size={0.1} color="blue" opacity={0.3} />
-                {points.map((p, i) => (
-                    <Point key={i} position={p} />
-                ))}
-            </Points>
-        </>
-    )
+  return (
+    <>
+      <CurveModifier curve={curve} ref={ref}>
+        {children}
+      </CurveModifier>
+      <Points limit={numPoints}>
+        <pointsMaterial size={0.1} color="blue" opacity={0.3} />
+        {points.map((p, i) => (
+          <Point key={i} position={p} />
+        ))}
+      </Points>
+    </>
+  )
 }
 
 function Olympus() {
-    return (
-        <>
-            <Monk />
-            <Rock />
-        </>
-    )
+  return (
+    <>
+      <Monk />
+      <Rock />
+    </>
+  )
 }
 
 function _Scene() {
-    return (
-        <>
-            <color attach="background" args={['#101009']} />
+  return (
+    <>
+      <color attach="background" args={['#101009']} />
 
-            <fog attach="fog" args={['#101009', 20, 30]} />
+      <fog attach="fog" args={['#101009', 20, 30]} />
 
-            <ambientLight intensity={0.25} />
+      <ambientLight intensity={0.25} />
 
-            <mesh position={[0, -2.2, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-                <planeGeometry args={[50, 50]} />
-                <MeshReflectorMaterial
-                    blur={[400, 100]}
-                    mirror={0.75}
-                    resolution={1024}
-                    mixBlur={1}
-                    mixStrength={15}
-                    depthScale={1}
-                    minDepthThreshold={0.85}
-                    color="#151515"
-                    metalness={0.6}
-                    roughness={1}
-                />
-            </mesh>
+      <mesh position={[0, -2.2, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[50, 50]} />
+        <MeshReflectorMaterial
+          blur={[400, 100]}
+          mirror={0.75}
+          resolution={1024}
+          mixBlur={1}
+          mixStrength={15}
+          depthScale={1}
+          minDepthThreshold={0.85}
+          color="#151515"
+          metalness={0.6}
+          roughness={1}
+        />
+      </mesh>
 
-            <ScrollControls pages={10}>
-                <Spiral numPoints={100} height={4}>
-                    <mesh position={[0, 0, 0]}>
-                        <meshStandardMaterial color="black" />
-                        <boxGeometry args={[0, 0, 0]} />
-                    </mesh>
-                </Spiral>
+      <ScrollControls pages={10}>
+        <Spiral numPoints={100} height={4}>
+          <mesh position={[0, 0, 0]}>
+            <meshStandardMaterial color="black" />
+            <boxGeometry args={[0, 0, 0]} />
+          </mesh>
+        </Spiral>
 
-                <Olympus />
-            </ScrollControls>
+        <Olympus />
+      </ScrollControls>
 
-            <Environment preset="sunset" />
+      <Environment preset="sunset" />
 
-            <EffectComposer>
-                <Bloom luminanceThreshold={0.5} intensity={0.1} />
-            </EffectComposer>
-        </>
-    )
+      <EffectComposer>
+        <Bloom luminanceThreshold={0.5} intensity={0.1} />
+      </EffectComposer>
+    </>
+  )
 }
 
 export function Scene() {
-    return (
-        <KeyControlsProvider>
-            <Canvas
-                shadows
-                dpr={[1, 1.5]}
-                camera={{ position: [5, 3, 6], fov: 50 }}
-                gl={{ alpha: false }}
-            >
-                <_Scene />
-                <KeyControlsHandler />
-            </Canvas>
-        </KeyControlsProvider>
-    )
+  return (
+    <KeyControlsProvider>
+      <Canvas
+        shadows
+        dpr={[1, 1.5]}
+        camera={{ position: [5, 3, 6], fov: 50 }}
+        gl={{ alpha: false }}
+      >
+        <_Scene />
+        <KeyControlsHandler />
+      </Canvas>
+    </KeyControlsProvider>
+  )
 }
