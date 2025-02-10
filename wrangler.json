@@ -12,5 +12,11 @@
       "binding": "NEXT_CACHE_WORKERS_KV",
       "id": "f1d57bd38c054d7590655ff7e1631f50"
     }
+  ],
+  "routes": [
+    {
+      "pattern": "w.buft.io",
+      "custom_domain": true
+    }
   ]
 }
