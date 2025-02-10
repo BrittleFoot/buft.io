@@ -1,9 +1,8 @@
-# 3D Snake
+# 3D buft.io scene
 
 ```
 npm i
 npm run dev
 ```
 
-It consumes (dats-new-way)[https://github.com/BrittleFoot/dats-new-way] `store.stream`,
-receives relay of the game, and renders it in 3D.
+> Inspired heavily by the technical implementation of The Year of Greta.
