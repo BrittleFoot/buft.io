@@ -15,7 +15,7 @@
   ],
   "routes": [
     {
-      "pattern": "w.buft.io",
+      "pattern": "buft.io",
       "custom_domain": true
     }
   ]
